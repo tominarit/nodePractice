@@ -1,0 +1,92 @@
+Mongo DB
+NoSQL
+
+Mongo DBの構成
+Database -> Collection -> Document
+
+
+use <dbname>; -> Creates database
+show collections;
+db.stats();
+db.createCollection("users");
+db.users.renameCollection("customers");
+db.customers.drop();
+db.dropDatabase();
+
+db.users.insert(
+... {
+... name: "toshiaki",
+... score: 30
+... }
+... );
+
+> for (var i = 0; i < 10; i++) {
+... db.users.insert({
+... score: Math.random()
+... });
+... }
+
+db.users.count(); ->何個のドキュメントが入っているか
+db.users.find(); ->ドキュメントの一覧
+
+検索条件について
+db.users.find({team: “team-1”})
+db.users.find({team: {$eq: “team-1”}})
+
+db.users.find({score: {$gte: 50}})
+
+$gte $gt $lte $lt
+$eq $ne
+/文字列/
+
+db.users.distinct(“team”);
+
+AND
+db.users.find({name:/i/, score:{$gte:50}})
+
+OR
+db.users.find({$or: [{name:/i/}, {score:{$gte:50}}]})
+
+IN いずれか
+db.users.find({score: {$in: [52, 66]}})
+
+fieldが存在するか 
+db.users.find({age: {$exists: true}});
+
+db.users.remove({}) ->全ドキュメントの削除
+
+データの表示
+db.users.find({}, {name: true, score: 1}); ->表示したいやつだけ引数として渡す
+
+抽出条件
+db.users.find({}, {_id: 0}).sort(score: 1);
+1 か -1でasc descを選択出来る
+.sort .limit .skip(検索を飛ばす)
+
+ドキュメントの更新
+db.users.update({name: “taguchi”}, {$set: {score: 80, team: “team-2”}})
+$setを設定しないと全部書きかわる（データが消える可能性がある）
+{multi: true}を第三引数に設定することで値する全てを書き換える
+
+$inc -> increase
+$mul -> multiply
+$rename -> {$rename: {score: “point”}}
+$unset -> {$unset: {score: “t”}}
+
+db.users.update({“name: “kato”}, {name: “kato”, score: 48}, {upsert: true});
+update and insert
+
+Index
+
+db.users.getIndexes();
+db.users.createIndex({score: -1});
+db.users.dropIndex(“score_-1”);
+db.users.createIndex({name: 1}, {unique: true});
+
+バックアップについて
+
+mongodump -d <データベース名>
+mongorestore - -drop
+
+
+http://qiita.com/CyberMergina/items/1010a93f1b5f1fc8d320
